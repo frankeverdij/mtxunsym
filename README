@@ -1,0 +1,212 @@
+    mtxuss :  the MTX unsymmetric sparse matrix program
+
+    Written by Frank Everdij
+    (C) 2017 Delft University of Technology
+
+mtxuss is a program written in C++ which read ASCII Matrix Market files and
+does a linear solve of that matrix using different solvers.
+The program requires JemJive as framework for basic algebra and finite element
+routines.
+
+There is more extensive documentation in RST format available which can be
+compiled and prepared using Sphinx.
+
+Contents:
+
+1. Getting started
+2. Running mtxuss
+3. Preparing Sphinx documentation
+
+
+-------------------------------------------------------------------------
+
+1. Getting Started
+==================
+
+We use Ubuntu 16.04 as the default OS on which mtxuss is built and tested.
+Therefore, package requirements are usually installed via apt.
+On different OS, please consult your OS-specific package manager for the
+required Libraries.
+
+a) Prerequisites:
+
+    - REQUIRED: C++ compiler (GNU g++ is recommended)
+
+    - REQUIRED: Compiled jem and jive libraries. Instructions on how to install
+                JemJive on your system will be given.
+
+    - RECOMMENDED: Umfpack library and its dependencies: AMD, BLAS and LAPACK
+
+    - OPTIONAL: Sphinx and Mathjax for building the documentation
+
+b) Installation:
+
+
+    First we are going to install JemJive.
+
+    1) Install a C++ compiler
+
+         sudo apt install build-essential g++
+
+    2) Get the Jem and Jive directories from Dynaflow, either:
+
+         Go to http://jive.dynaflow.com/downloads/ and click on 'Download Jem'
+         and 'Download Jive'
+
+       or use direct link with wget:
+
+           wget https://isotracer.com/isotracer-downloads/
+                 ZQ2nyVhdzmgCagY2D24esSyvH8fKmshNugvrYqyChcQeCTT9/jem-2.2.tgz
+
+           wget https://isotracer.com/isotracer-downloads/
+                 ZQ2nyVhdzmgCagY2D24esSyvH8fKmshNugvrYqyChcQeCTT9/jive-2.2.tgz
+
+    3) Install JemJive dependencies
+
+         sudo apt install zlib1g-dev libreadline-dev freeglut3-dev
+
+    4) Create a directory for the library build
+
+         mkdir ~/jemjive && cd ~/jemjive
+
+    5) Unpack the Jem and Jive archives:
+
+         tar zxvf ~/Downloads/jem-2.2.tgz
+         tar zxvf ~/Downloads/jive-2.2.tgz
+
+    6) Go to the Jem directory and configure it:
+
+         cd jem-2.2 && ./configure
+
+    7) Make the library:
+
+         make
+
+    There is no need to do a 'make install': jemjive programs rely solely on
+    the environment variables JEMDIR and JIVEDIR
+
+    8) Set the environment variable JEMDIR:
+
+         export JEMDIR=`pwd`  (or export JEMDIR=$HOME/jemjive/jem-2.2 )
+
+       or, if you're using (t)csh:
+
+         setenv JEMDIR `pwd` (or setenv JEMDIR $HOME/jemjive/jem-2.2 )
+
+    9) Go to the Jive directory and configure it:
+
+         cd ../jive-2.2 && ./configure
+
+   10) Make the library:
+
+         make
+
+   11) Set the environment variable JIVEDIR:
+
+         export JIVEDIR=`pwd`  (or export JIVEDIR=$HOME/jemjive/jive-2.2 )
+
+       or, if you're using (t)csh:
+
+         setenv JIVEDIR `pwd`  (or setenv JIVEDIR $HOME/jemjive/jive-2.2 )
+
+   12) Update your startup scripts to set the environment variables JEMDIR
+       and JIVEDIR. If you use Bash, add the following two lines in ~/.bashrc :
+
+         export JEMDIR=$HOME/jemjive/jem-2.2
+         export JIVEDIR=$HOME/jemjive/jive-2.2
+
+   This concludes the JemJive installation. Next step is building the
+   mtxuss program:
+
+   14) Install dependencies for Umfpack:
+
+         sudo apt install liblapack-dev libopenblas-dev libsuitesparse-dev
+
+   15) Change to the src directory and make the program with Umfpack support:
+
+         cd mtxunsym/src && make -f Makefile.Umfpack opt
+
+
+   The binary is called 'mtxuss-opt' .
+
+
+-------------------------------------------------------------------------
+
+2. Running mtxuss
+=================
+
+There are two ways of running mtxuss:
+
+    - Without arguments: The program runs an internal unit-test with a built-in
+      Matrix and compares agains a reference solution:
+
+    ./mtxuss-opt 
+      no MTX file given. Using internal unittest sparse matrix.
+
+      size is 8 x 8 with 20 nonzeros.
+
+      Umfpack total run time is : 0.0003710  seconds
+      Norm of (x - reference) = 1.110223e-16 , passed, norm is within
+        1.000000e-14 tol
+
+      SparseLU total run time is : 3.600e-05  seconds
+      Norm of (x - reference) = 4.475452e-16 , passed, norm is within
+        1.000000e-14 tol
+
+      solver `SkylineLU' : residual norm too large: 3.725144e+00
+      SkylineLU : switching to the `SparseLU' solver
+      SkylineLU total run time is : 0.004045  seconds
+      Norm of (x - reference) = 4.475452e-16 , passed, norm is within
+        1.000000e-14 tol
+
+
+    - With one argument: The program interprets the argument as a filename for
+      an ASCII MTX file, defining a Matrix. in directory mtx there are several
+      mtx files with full rank which can be inverted:
+
+    cd ../mtx
+    ../src/mtxuss-opt sme3Da.mtx
+
+      MTX file size 12504 x 12504
+
+      size is 12504 x 12504 with 874887 nonzeros.
+
+      Umfpack total run time is : 0.3309  seconds
+
+      SparseLU total run time is : 3.878  seconds
+
+      SkylineLU total run time is : 0.9711  seconds
+
+
+    For each solver used it will output a result vector X with the solvername
+    and mtx base filename for comparison.
+
+
+-------------------------------------------------------------------------
+
+3. Preparing Sphinx documentation
+=================================
+
+This part is optional: it allows you to build the html and pdf version of
+the Sphinx documentation.
+
+a) Prerequisites:
+
+    - REQUIRED: package python-sphinx
+
+    - OPTIONAL: LaTeX or TeX Live installation for building pdf output
+
+b) Installation:
+
+    1) Install the Sphinx package:
+
+         sudo apt install python-sphinx
+
+    2) Change to directory sphinx and make the html output:
+
+         cd mtxunsym/sphinx && make html
+
+    After the build stage the documentation can be displayed in a browser
+    pointing to file:///path_to_mtxunsym/sphinx/_build/html/index.html
+
+

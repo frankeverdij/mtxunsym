@@ -1,0 +1,12 @@
+
+program = mtxuss
+subdirs = umfpack
+
+include $(JIVEDIR)/makefiles/prog.mk
+include $(JIVEDIR)/makefiles/packages/*.mk
+
+MY_LIBS 	= umfpack amd suitesparseconfig lapack openblas gfortran
+MY_INCDIRS      = $(subdirs) /opt/include /usr/include/suitesparse
+MY_LIBDIRS	= . /opt/lib
+MY_CXX_STD_FLAGS    = -DWITH_UMFPACK
+MY_LD_FLAGS     = -static
