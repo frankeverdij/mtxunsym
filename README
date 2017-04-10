@@ -118,11 +118,11 @@ b) Installation:
    This concludes the JemJive installation. Next step is building the
    mtxuss program:
 
-   14) Install dependencies for Umfpack:
+   13) Install dependencies for Umfpack:
 
          sudo apt install liblapack-dev libopenblas-dev libsuitesparse-dev
 
-   15) Change to the src directory and make the program with Umfpack support:
+   14) Change to the src directory and make the program with Umfpack support:
 
          cd mtxunsym/src && make -f Makefile.Umfpack opt
 
